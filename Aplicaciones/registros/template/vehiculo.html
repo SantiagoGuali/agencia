@@ -1,0 +1,215 @@
+{% extends "./plantilla.html" %}
+{% load static %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Vehículos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Vehículos Registrados</h1>
+        <div class="text-right mb-4">
+            <!-- Botón para abrir el modal de agregar vehículo -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarVehiculoModal">
+                Agregar Nuevo Vehículo
+            </button>
+        </div>
+
+        <!-- Tabla de vehículos -->
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Fabricación</th>
+                    <th>Precio</th>
+                    <th>Color</th>
+                    <th>Placa</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehiculo in vehiculos %}
+                <tr>
+                    <td>{{ vehiculo.fk_id_mod.nombre_mod }}</td>
+                    <td>{{ vehiculo.fabricacion_veh }}</td>
+                    <td>{{ vehiculo.precio_veh }}</td>
+                    <td>{{ vehiculo.color_veh }}</td>
+                    <td>{{ vehiculo.placa_veh }}</td>
+                    <td>
+                        <!-- Botón para abrir el modal de editar vehículo -->
+                        <button type="button" class="btn btn-outline-warning btn-circle" data-bs-toggle="modal" data-bs-target="#editarVehiculoModal" data-id="{{ vehiculo.id }}" data-modelo="{{ vehiculo.fk_id_mod.id }}" data-fabricacion="{{ vehiculo.fabricacion_veh }}" data-precio="{{ vehiculo.precio_veh }}" data-color="{{ vehiculo.color_veh }}" data-placa="{{ vehiculo.placa_veh }}">
+                            Editar
+                        </button>
+
+                        <!-- Botón para abrir el modal de eliminar vehículo -->
+                        <button type="button" class="btn btn-outline-danger btn-circle" data-bs-toggle="modal" data-bs-target="#eliminarVehiculoModal" data-id="{{ vehiculo.id }}">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay vehículos registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para agregar vehículo -->
+    <div class="modal fade" id="agregarVehiculoModal" tabindex="-1" aria-labelledby="agregarVehiculoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarVehiculoModalLabel">Agregar Nuevo Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'agregarVehiculo' %}">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label for="modeloVeh">Modelo</label>
+                            <select class="form-control" id="modeloVeh" name="fk_id_mod" required>
+                                {% for modelo in modelos %}
+                                    <option value="{{ modelo.id }}">{{ modelo.nombre_mod }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="fabricacionVeh">Año de Fabricación</label>
+                            <input type="number" class="form-control" id="fabricacionVeh" name="fabricacion_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="precioVeh">Precio</label>
+                            <input type="text" class="form-control" id="precioVeh" name="precio_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="colorVeh">Color</label>
+                            <input type="text" class="form-control" id="colorVeh" name="color_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="placaVeh">Placa</label>
+                            <input type="text" class="form-control" id="placaVeh" name="placa_veh" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar vehículo -->
+    <div class="modal fade" id="editarVehiculoModal" tabindex="-1" aria-labelledby="editarVehiculoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarVehiculoModalLabel">Editar Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'editarVehiculo' 0 %}" id="editarVehiculoForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" id="vehiculoId">
+                        <div class="form-group mb-3">
+                            <label for="modeloVehEdit">Modelo</label>
+                            <select class="form-control" id="modeloVehEdit" name="fk_id_mod" required>
+                                {% for modelo in modelos %}
+                                    <option value="{{ modelo.id }}">{{ modelo.nombre_mod }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="fabricacionVehEdit">Año de Fabricación</label>
+                            <input type="number" class="form-control" id="fabricacionVehEdit" name="fabricacion_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="precioVehEdit">Precio</label>
+                            <input type="text" class="form-control" id="precioVehEdit" name="precio_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="colorVehEdit">Color</label>
+                            <input type="text" class="form-control" id="colorVehEdit" name="color_veh" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="placaVehEdit">Placa</label>
+                            <input type="text" class="form-control" id="placaVehEdit" name="placa_veh" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para eliminar vehículo -->
+    <div class="modal fade" id="eliminarVehiculoModal" tabindex="-1" aria-labelledby="eliminarVehiculoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eliminarVehiculoModalLabel">Eliminar Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este vehículo?
+                    <form method="POST" action="" id="eliminarVehiculoForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" id="vehiculoIdEliminar">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script para manejar los modales de editar y eliminar
+        var editarVehiculoModal = document.getElementById('editarVehiculoModal');
+        editarVehiculoModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var vehiculoId = button.getAttribute('data-id');
+            var vehiculoModelo = button.getAttribute('data-modelo');
+            var vehiculoFabricacion = button.getAttribute('data-fabricacion');
+            var vehiculoPrecio = button.getAttribute('data-precio');
+            var vehiculoColor = button.getAttribute('data-color');
+            var vehiculoPlaca = button.getAttribute('data-placa');
+            var form = document.getElementById('editarVehiculoForm');
+            form.action = "/editar_vehiculo/" + vehiculoId + "/"; 
+            document.getElementById('vehiculoId').value = vehiculoId;
+            document.getElementById('modeloVehEdit').value = vehiculoModelo;
+            document.getElementById('fabricacionVehEdit').value = vehiculoFabricacion;
+            document.getElementById('precioVehEdit').value = vehiculoPrecio;
+            document.getElementById('colorVehEdit').value = vehiculoColor;
+            document.getElementById('placaVehEdit').value = vehiculoPlaca;
+        });
+
+        var agregarVehiculoModal = document.getElementById('agregarVehiculoModal');
+        agregarVehiculoModal.addEventListener('show.bs.modal', function (event) {
+            // Lógica para manejar los valores del select
+            var selectedModelo = document.getElementById('modeloVeh').value;
+            console.log("Modelo seleccionado en agregar: " + selectedModelo);
+        });
+
+        var eliminarVehiculoModal = document.getElementById('eliminarVehiculoModal');
+        eliminarVehiculoModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var vehiculoId = button.getAttribute('data-id');
+            document.getElementById('vehiculoIdEliminar').value = vehiculoId;
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
