@@ -31,7 +31,7 @@ class Vehiculo(models.Model):
     fabricacion_veh = models.IntegerField()
     precio_veh = models.DecimalField(max_digits=10, decimal_places=2)
     color_veh = models.CharField(max_length=50)
-    placa_veh = models.CharField(max_length=10)
+    placa_veh = models.CharField(max_length=20)
 
     def __str__(self):
         return self.placa_veh
