@@ -1,0 +1,34 @@
+{% extends 'plantilla.html' %}
+
+{% block body %}
+<div id="vehiculosCarrusel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="https://www.revistaturbo.com/wp-content/uploads/2020/05/portada_autos_vendidos.jpg" class="d-block w-100" alt="Vehículo 1">
+    </div>
+    <div class="carousel-item">
+      <img src="https://www.eluniverso.com/resizer/v2/C5CJIUD4EJHKPA3CBFZWQFU6IU.jpg?auth=1e6e7e4c711569db7e832d160b87e4661d27542d005a30820a7a9268c5a05d28&width=1328&height=670&quality=75&smart=true" class="d-block w-100" alt="Vehículo 2">
+    </div>
+    <div class="carousel-item">
+      <img src="https://blob.diariodelyaqui.mx/images/2024/10/22/autos-chocolate-2-d363d7ee-focus-0-0-732-549.jpg" class="d-block w-100" alt="Vehículo 3">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#vehiculosCarrusel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#vehiculosCarrusel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
+</div>
+
+<!-- Estilos para que el carrusel ocupe toda la pantalla -->
+<style>
+  .carousel-item img {
+    object-fit: cover;
+    height: 100vh;
+  }
+</style>
+
+{% endblock %}
